@@ -1,0 +1,45 @@
+﻿using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace HttpClientDemo
+{
+    class Program
+    {
+        static private async Task GetRequest()
+        {
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(new Uri("https://requestb.in/1jh5q081?data=blah"));
+
+            //will throw an exception if not successful
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(content);
+        }
+
+        static private async Task PostRequest()
+        {
+            var httpClient = new HttpClient();
+            var o = new { Data00 = "Value", Data01 = 1, Data02="Hello" };
+            var content = new StringContent(o.ToString(), Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync(new Uri("https://requestb.in/1jh5q081"), content);
+
+            //will throw an exception if not successful
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(result);
+        }
+
+        static void Main()
+        {
+            GetRequest().Wait();
+            PostRequest().Wait();
+            Console.WriteLine("Finished Main");
+            Console.ReadKey();
+        }
+    }
+}
